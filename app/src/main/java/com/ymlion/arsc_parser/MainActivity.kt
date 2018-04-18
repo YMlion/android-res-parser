@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import com.ymlion.arsc_parser.R.id
 import com.ymlion.arsc_parser.R.layout
 import com.ymlion.arsc_parser.R.string
-import kotlinx.android.synthetic.main.activity_main.*
+import com.ymlion.parser.ArscFile
+import kotlinx.android.synthetic.main.activity_main.message
+import kotlinx.android.synthetic.main.activity_main.navigation
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,5 +35,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        val input = assets.open("resources.arsc")
+        ArscFile.parse(input)
+        input.close()
+        val input1 = assets.open("resources1.arsc")
+        ArscFile.parse(input1)
+        input1.close()
     }
 }
