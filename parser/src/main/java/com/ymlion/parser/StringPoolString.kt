@@ -16,22 +16,26 @@ class StringPoolString {
         fun parse(input: InputStream, flags: Int): StringPoolString {
             val string = StringPoolString()
             string.len = input.read()
+            string.bytesNum += 1
             if (string.len >= 128) {
                 input.read()
+                string.bytesNum += 1
             }
             string.len = input.read()
-            if (string.len == 128) {
-                string.len = input.read()
-            } else if (string.len > 128) {
+            string.bytesNum += 1
+            if (string.len >= 128) {
                 string.len = input.read() or ((string.len and 0x7f) shl 8)
+                string.bytesNum += 1
             }
             val bytes = ByteArray(string.len)
             input.read(bytes)
             input.read()
+            string.bytesNum += string.len + 1
             val charset = if (flags >= 0x100) {
                 "UTF-8"
             } else {
                 input.read()
+                string.bytesNum += 1
                 "UTF-16"
             }
             string.content = String(bytes, Charset.forName(charset))
@@ -51,6 +55,8 @@ class StringPoolString {
      * 1 byte or 2 bytes
      */
     var endMark = 0
+
+    var bytesNum = 0
 
     override fun toString(): String {
         return content
