@@ -1,5 +1,6 @@
 package com.ymlion.parser
 
+import com.ymlion.parser.ResTableEntry.ResMapEntry
 import java.io.InputStream
 
 /**
@@ -22,42 +23,41 @@ public class ArscFile {
             parseStringPool(input)
             val offBytes = ByteArray(4)
             // 后面同样属于package部分，更加资源类型数量，分别解析，直到全部解析完
+            var resHeader = ResHeader.parse(input)
+            // 有多少资源类型，后面就有多少 type spec
             for (j in 1..packageHeader.lastPublicType) {
-                println("available bytes is " + input.available())
-                val specHeader = ResTypeSpecHeader.parse(input)
+                val specHeader = ResTypeSpecHeader.parse(input, resHeader)
+                // spec 资源数组
                 for (i in 0 until specHeader.entryCount) {
                     input.read(offBytes)
                 }
-
-                val typeHeader = ResTypeHeader.parse(input)
-                var total = typeHeader.size
-                // entry偏移数组
-                for (i in 0 until typeHeader.entryCount) {
-                    input.read(offBytes)
-                }
-                total += 4 * typeHeader.entryCount
-                // 读取资源项
-                for (i in 0 until typeHeader.entryCount) {
-                    val tableEntry = ResTableEntry.parse(input)
-                    /*total += if (tableEntry is ResMapEntry) {
-                        28 * tableEntry.count
-                    } else {
-                        16
+                resHeader = ResHeader.parse(input)
+                while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
+                    val typeHeader = ResTypeHeader.parse(input, resHeader)
+                    var total = typeHeader.header!!.headSize
+                    // entry偏移数组
+                    for (i in 0 until typeHeader.entryCount) {
+                        input.read(offBytes)
                     }
-                    if (total >= typeHeader.header!!.size) {
-                        break
-                    }*/
-                }
-                /*while (total < typeHeader.header!!.size) {
-                    val tableEntry = ResTableEntry.parse(input)
-                    total += if (tableEntry is ResMapEntry) {
-                        28 * tableEntry.count
-                    } else {
-                        16
+                    total += 4 * typeHeader.entryCount
+                    // 读取资源项
+                    while (total < typeHeader.header!!.size) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
+                        val tableEntry = ResTableEntry.parse(input)
+                        total += if (tableEntry is ResMapEntry) {
+                            16 + 12 * tableEntry.count
+                        } else {
+                            16
+                        }
                     }
-                }*/
+                    resHeader = ResHeader.parse(input)
+                }
             }
-            println("还有多少？ ${input.available()} !!!!!!")
+            val available = input.available()
+            if (available == 0) {
+                println("解析完毕.")
+            } else {
+                println("解析失败，还剩 $available 字节")
+            }
         }
 
         private fun parseStringPool(input: InputStream) {

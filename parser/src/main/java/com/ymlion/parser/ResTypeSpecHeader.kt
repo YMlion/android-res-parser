@@ -11,8 +11,12 @@ class ResTypeSpecHeader {
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeSpecHeader {
+            return parse(inputStream, ResHeader.parse(inputStream))
+        }
+
+        public fun parse(inputStream: InputStream, resHeader: ResHeader): ResTypeSpecHeader {
             val specHeader = ResTypeSpecHeader()
-            specHeader.header = ResHeader.parse(inputStream)
+            specHeader.header = resHeader
             val byteArray = ByteArray(8)
             inputStream.read(byteArray)
             specHeader.id = ByteUtil.bytes2Int(byteArray, 0, 1)

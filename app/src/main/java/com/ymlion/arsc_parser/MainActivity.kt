@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
         val input = assets.open("resources.arsc")
         ArscFile.parse(input)
         input.close()
-//        val input1 = assets.open("resources1.arsc")
-//        ArscFile.parse(input1)
-//        input1.close()
+        val input1 = assets.open("resources1.arsc")
+        ArscFile.parse(input1)
+        input1.close()
     }
 }

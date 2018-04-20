@@ -11,8 +11,12 @@ class ResTypeHeader {
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeHeader {
+            return parse(inputStream, ResHeader.parse(inputStream))
+        }
+
+        public fun parse(inputStream: InputStream, header: ResHeader): ResTypeHeader {
             val typeHeader = ResTypeHeader()
-            typeHeader.header = ResHeader.parse(inputStream)
+            typeHeader.header = header
             val byteArray = ByteArray(12)
             inputStream.read(byteArray)
             // id之后三位保留，为0
@@ -20,12 +24,11 @@ class ResTypeHeader {
             typeHeader.entryCount = ByteUtil.bytes2Int(byteArray, 4, 4)
             typeHeader.entriesStart = ByteUtil.bytes2Int(byteArray, 8, 4)
             // 开始读取配置信息
-            val lengthBytes = ByteArray(2)
-            inputStream.read(lengthBytes)
-            val length = ByteUtil.bytes2Int(lengthBytes, 0, 2)
-            inputStream.read(ByteArray(length - 2))
+//            val lengthBytes = ByteArray(2)
+//            inputStream.read(lengthBytes)
+//            val length = ByteUtil.bytes2Int(lengthBytes, 0, 2)
+            inputStream.read(ByteArray(header.headSize - 20))
             println(typeHeader)
-            typeHeader.size += length
             return typeHeader
         }
     }
@@ -47,10 +50,6 @@ class ResTypeHeader {
      * offset, 4 bytes
      */
     var entriesStart = 0
-    /**
-     * 仅仅用于计算读取的大小
-     */
-    var size = 20
 
     override fun toString(): String {
         return StringBuilder().append("ResTypeHeader:").append('\n').append(
