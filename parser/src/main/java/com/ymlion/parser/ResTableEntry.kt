@@ -3,7 +3,7 @@ package com.ymlion.parser
 import java.io.InputStream
 
 /**
- * 资源项数据结构
+ * 资源项数据结构，该部分的解析确定了一个资源的定义
  *
  * Created by YMlion on 2018/4/19.
  */

@@ -10,6 +10,8 @@ public class ArscFile {
     companion object {
         public fun parse(input: InputStream) {
             var tableHeader = ResTableHeader.parse(input)
+            // 解析全局字符串资源值，字符串池存放所有资源的值，并且该值为字符串
+            // 像所有的xml文件名、图片资源名、xml中定义的字符串、系统定义的字符串
             parseStringPool(input)
             // 解析package header
             val packageHeader = ResPackageHeader.parse(input)
@@ -17,9 +19,9 @@ public class ArscFile {
             skip(input, 4)
             // package chunk后面是资源类型字符串池和资源名称字符串池
             // 这两部分的结构和和前面的字符串池结构相同，只不过字符串样式数量为0
-            // 先解析资源类型字符串池
+            // 先解析资源类型字符串池，资源类型有限，一般十多种
             parseStringPool(input)
-            // 解析资源名称字符串池
+            // 解析资源名称字符串池，资源定义中的属性(key)字符串存放在这里，值(value)有一部分存放在全局字符串池中，非字符串则存放在后面的entry中
             parseStringPool(input)
             val offBytes = ByteArray(4)
             // 后面同样属于package部分，更加资源类型数量，分别解析，直到全部解析完
@@ -34,6 +36,9 @@ public class ArscFile {
                 resHeader = ResHeader.parse(input)
                 while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
                     val typeHeader = ResTypeHeader.parse(input, resHeader)
+                    if (typeHeader.id == 3) {
+                        println("************************* ${input.available()} ********************")
+                    }
                     var total = typeHeader.header!!.headSize
                     // entry偏移数组
                     for (i in 0 until typeHeader.entryCount) {
@@ -81,6 +86,7 @@ public class ArscFile {
             for (i in 0 until stringPoolHeader.stringCount) {
                 val string = StringPoolString.parse(input, stringPoolHeader.flags)
                 total += string.bytesNum
+                println("$i  ${string.content}")
             }
             // 4字节对齐
             val makeUp = 4 - total % 4

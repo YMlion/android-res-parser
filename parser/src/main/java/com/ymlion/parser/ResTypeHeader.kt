@@ -24,9 +24,6 @@ class ResTypeHeader {
             typeHeader.entryCount = ByteUtil.bytes2Int(byteArray, 4, 4)
             typeHeader.entriesStart = ByteUtil.bytes2Int(byteArray, 8, 4)
             // 开始读取配置信息
-//            val lengthBytes = ByteArray(2)
-//            inputStream.read(lengthBytes)
-//            val length = ByteUtil.bytes2Int(lengthBytes, 0, 2)
             inputStream.read(ByteArray(header.headSize - 20))
             println(typeHeader)
             return typeHeader
