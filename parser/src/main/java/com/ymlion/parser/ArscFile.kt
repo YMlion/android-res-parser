@@ -24,7 +24,7 @@ public class ArscFile {
             // 解析资源名称字符串池，资源定义中的属性(key)字符串存放在这里，值(value)有一部分存放在全局字符串池中，非字符串则存放在后面的entry中
             parseStringPool(input)
             val offBytes = ByteArray(4)
-            // 后面同样属于package部分，更加资源类型数量，分别解析，直到全部解析完
+            // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
             var resHeader = ResHeader.parse(input)
             // 有多少资源类型，后面就有多少 type spec
             for (j in 1..packageHeader.lastPublicType) {

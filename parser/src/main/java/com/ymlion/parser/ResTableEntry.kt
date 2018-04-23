@@ -62,7 +62,7 @@ open class ResTableEntry {
     var flags = 1
 
     /**
-     * 资源名称在字符串池中的索引，4字节
+     * 资源名称在资源名称字符串池中的索引，4字节
      */
     var key = 0
 
