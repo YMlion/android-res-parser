@@ -35,11 +35,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        val input = assets.open("resources.arsc")
+        val input = assets.open("resources1.arsc")
         ArscFile.parse(input)
         input.close()
-        /*val input1 = assets.open("resources1.arsc")
-        ArscFile.parse(input1)
-        input1.close()*/
     }
 }

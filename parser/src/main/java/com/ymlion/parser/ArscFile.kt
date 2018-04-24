@@ -66,8 +66,9 @@ public class ArscFile {
         }
 
         private fun parseStringPool(input: InputStream) {
-
             val stringPoolHeader = ResStringPoolHeader.parse(input)
+            // 结束的位置
+            val endPosition = input.available() - stringPoolHeader.header!!.size + stringPoolHeader.header!!.headSize
             // 字符串偏移数组
             val stringOffsets = IntArray(stringPoolHeader.stringCount)
             val offBytes = ByteArray(4)
@@ -100,6 +101,10 @@ public class ArscFile {
             // style数组以8字节0xFF作为结尾
             if (stringPoolHeader.styleCount > 0) {
                 skip(input, 8)
+            }
+            val dif = input.available() - endPosition
+            if (dif > 0) {// 解析完该部分之后，有可能有4个0x00结尾
+                skip(input, dif)
             }
         }
 
