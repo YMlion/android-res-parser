@@ -9,6 +9,14 @@ import com.ymlion.arsc_parser.R.string
 import com.ymlion.parser.ArscFile
 import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.channels.FileChannel
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,8 +43,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        val input = assets.open("resources1.arsc")
-        ArscFile.parse(input)
-        input.close()
+        thread {
+            var input = assets.open("resources1.arsc")
+            ArscFile.parse(input)
+            input.close()
+
+            input = assets.open("resources1.arsc")
+            if (!cacheDir.exists()) {
+                cacheDir.mkdir()
+            }
+            val arscCopy = File(cacheDir, "resources1.arsc")
+            val out = BufferedOutputStream(FileOutputStream(arscCopy))
+            val bytes = ByteArray(1024)
+            while (input.read(bytes) != -1) {
+                out.write(bytes)
+            }
+            out.flush()
+            out.close()
+            input.close()
+            input = FileInputStream(arscCopy)
+            var channel: FileChannel = input.channel
+            channel.position(4)
+            var byteBuffer = ByteBuffer.allocate(4)
+            channel.read(byteBuffer)
+            byteBuffer.flip()
+            var i = byteBuffer.order(ByteOrder.LITTLE_ENDIAN).int
+            println("start with $i")
+            channel.close()
+            byteBuffer.clear()
+            input.close()
+        }
     }
 }
