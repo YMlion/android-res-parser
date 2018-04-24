@@ -96,7 +96,7 @@ public class ArscFile {
             }
             // 读取字符串样式
             for (i in 0 until stringPoolHeader.styleCount) {
-                var style = StringPoolStyle.parse(input)
+                StringPoolStyle.parse(input)
             }
             // style数组以8字节0xFF作为结尾
             if (stringPoolHeader.styleCount > 0) {
