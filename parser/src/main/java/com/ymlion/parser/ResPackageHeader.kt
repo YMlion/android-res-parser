@@ -1,13 +1,39 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * package header, 284 bytes
  *
  * Created by YMlion on 2018/4/18.
  */
-class ResPackageHeader {
+class ResPackageHeader() {
+    constructor(file: RandomAccessFile) : this() {
+        header = ResHeader(file)
+        val byteArray = ByteArray(4)
+        file.read(byteArray)
+        id = ByteUtil.bytes2Int(byteArray, 0, 4)
+        val stringBytes = ByteArray(256)
+        file.read(stringBytes)
+        val builder = StringBuilder()
+        for (i in 0..255 step 2) {
+            val char = ByteUtil.bytes2Int(stringBytes, i, 2)
+            if (char == 0) {
+                break
+            }
+            builder.append(char.toChar())
+        }
+        name = builder.toString()
+        file.read(byteArray)
+        typeStrings = ByteUtil.bytes2Int(byteArray, 0, 4)
+        file.read(byteArray)
+        lastPublicType = ByteUtil.bytes2Int(byteArray, 0, 4)
+        file.read(byteArray)
+        keyStrings = ByteUtil.bytes2Int(byteArray, 0, 4)
+        file.read(byteArray)
+        lastPublicKey = ByteUtil.bytes2Int(byteArray, 0, 4)
+    }
 
     companion object {
         public fun parse(inputStream: InputStream): ResPackageHeader {

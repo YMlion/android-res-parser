@@ -1,6 +1,7 @@
 package com.ymlion.arsc_parser
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import com.ymlion.arsc_parser.R.id
@@ -11,11 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.message
 import kotlinx.android.synthetic.main.activity_main.navigation
 import java.io.BufferedOutputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.channels.FileChannel
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
@@ -61,17 +58,21 @@ class MainActivity : AppCompatActivity() {
             out.flush()
             out.close()
             input.close()
-            input = FileInputStream(arscCopy)
-            var channel: FileChannel = input.channel
+            /*input = FileInputStream(arscCopy)
+            val channel: FileChannel = input.channel
             channel.position(4)
-            var byteBuffer = ByteBuffer.allocate(4)
+            val byteBuffer = ByteBuffer.allocate(4)
             channel.read(byteBuffer)
             byteBuffer.flip()
             var i = byteBuffer.order(ByteOrder.LITTLE_ENDIAN).int
             println("start with $i")
-            channel.close()
-            byteBuffer.clear()
-            input.close()
+            channel.close()dddd
+            input.close()*/
+        }
+
+        thread {
+            SystemClock.sleep(5000)
+            ArscFile(File(cacheDir, "resources1.arsc")).parse()
         }
     }
 }

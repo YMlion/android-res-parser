@@ -1,6 +1,7 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * 字符串样式， 一个字符串可以对应于多个样式
@@ -9,7 +10,15 @@ import java.io.InputStream
  *
  * Created by YMlion on 2018/4/18.
  */
-class StringPoolStyle {
+class StringPoolStyle() {
+
+    constructor(file: RandomAccessFile) : this() {
+        val bytes = ByteArray(16)
+        file.read(bytes)
+        name = ByteUtil.bytes2Int(bytes, 0, 4)
+        firstChar = ByteUtil.bytes2Int(bytes, 4, 4)
+        lastChar = ByteUtil.bytes2Int(bytes, 8, 4)
+    }
 
     companion object {
         public fun parse(input: InputStream) {

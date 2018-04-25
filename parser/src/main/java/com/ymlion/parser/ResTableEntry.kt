@@ -1,6 +1,7 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * 资源项数据结构，该部分的解析确定了一个资源的定义
@@ -66,7 +67,37 @@ open class ResTableEntry {
      */
     var key = 0
 
-    class ResMapEntry : ResTableEntry() {
+    class ResMapEntry() : ResTableEntry() {
+        constructor(file: RandomAccessFile) : this() {
+            var bytes = ByteArray(8)
+            file.read(bytes)
+            size = ByteUtil.bytes2Int(bytes, 0, 2)
+            flags = ByteUtil.bytes2Int(bytes, 2, 2)
+            key = ByteUtil.bytes2Int(bytes, 4, 4)
+            if (flags and 0x0001 == 1) {
+                file.read(bytes)
+                parent = ByteUtil.bytes2Int(bytes, 0, 4)
+                count = ByteUtil.bytes2Int(bytes, 4, 4)
+                bytes = ByteArray(12)
+                for (i in 1..count) {
+                    // 解析map数组
+                    file.read(bytes)
+                    var tableMap = ResTableMap()
+                    tableMap.name = ByteUtil.bytes2Int(bytes, 0, 4)
+                    tableMap.value = ResValue()
+                    tableMap.value.size = ByteUtil.bytes2Int(bytes, 4, 2)
+                    tableMap.value.dataType = ByteUtil.bytes2Int(bytes, 7, 1)
+                    tableMap.value.data = ByteUtil.bytes2Int(bytes, 8, 4)
+                }
+            } else {
+                file.read(bytes)
+                val value = ResValue()
+                value.size = ByteUtil.bytes2Int(bytes, 0, 2)
+                value.dataType = ByteUtil.bytes2Int(bytes, 3, 1)
+                value.data = ByteUtil.bytes2Int(bytes, 4, 4)
+            }
+        }
+
         /**
          * 父节点，4字节
          */

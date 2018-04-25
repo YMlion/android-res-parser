@@ -1,13 +1,25 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * 28 bytes，主要描述package中定义的字符串值和字符串样式数量和位置
  *
  * Created by YMlion on 2018/4/18.
  */
-class ResStringPoolHeader {
+class ResStringPoolHeader() {
+
+    constructor(file: RandomAccessFile) : this() {
+        header = ResHeader(file)
+        val byteArray = ByteArray(20)
+        file.read(byteArray)
+        stringCount = ByteUtil.bytes2Int(byteArray, 0, 4)
+        styleCount = ByteUtil.bytes2Int(byteArray, 4, 4)
+        flags = ByteUtil.bytes2Int(byteArray, 8, 4)
+        stringsStart = ByteUtil.bytes2Int(byteArray, 12, 4)
+        stylesStart = ByteUtil.bytes2Int(byteArray, 16, 4)
+    }
 
     companion object {
         public fun parse(inputStream: InputStream): ResStringPoolHeader {
@@ -28,7 +40,7 @@ class ResStringPoolHeader {
     /**
      * chunk head, 8 bytes
      */
-    var header: ResHeader? = null
+    lateinit var header: ResHeader
     /**
      * strings count, 4 bytes
      */

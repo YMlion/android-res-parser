@@ -1,13 +1,22 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * 类型规范type spec header, 16 bytes
  *
  * Created by YMlion on 2018/4/19.
  */
-class ResTypeSpecHeader {
+class ResTypeSpecHeader() {
+    constructor(file: RandomAccessFile, resHeader: ResHeader) : this() {
+        header = resHeader
+        val byteArray = ByteArray(8)
+        file.read(byteArray)
+        id = ByteUtil.bytes2Int(byteArray, 0, 1)
+        // id之后是三个保留字段，默认为0
+        entryCount = ByteUtil.bytes2Int(byteArray, 4, 4)
+    }
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeSpecHeader {

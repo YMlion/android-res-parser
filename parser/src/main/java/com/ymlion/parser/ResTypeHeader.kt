@@ -1,13 +1,26 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * type header, 20 + 52 bytes
  *
  * Created by YMlion on 2018/4/19.
  */
-class ResTypeHeader {
+class ResTypeHeader() {
+
+    constructor(file: RandomAccessFile, resHeader: ResHeader) : this() {
+        header = resHeader
+        val byteArray = ByteArray(12)
+        file.read(byteArray)
+        // id之后三位保留，为0
+        id = ByteUtil.bytes2Int(byteArray, 0, 1)
+        entryCount = ByteUtil.bytes2Int(byteArray, 4, 4)
+        entriesStart = ByteUtil.bytes2Int(byteArray, 8, 4)
+        // 开始读取配置信息
+        file.skipBytes(header.headSize - 20)
+    }
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeHeader {
@@ -33,7 +46,7 @@ class ResTypeHeader {
     /**
      * chunk header, 8 bytes
      */
-    var header: ResHeader? = null
+    lateinit var header: ResHeader
 
     /**
      * type id, 1 byte

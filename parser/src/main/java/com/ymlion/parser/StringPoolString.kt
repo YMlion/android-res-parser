@@ -1,6 +1,7 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 import java.nio.charset.Charset
 
 /**
@@ -8,7 +9,29 @@ import java.nio.charset.Charset
  *
  * Created by YMlion on 2018/4/18.
  */
-class StringPoolString {
+class StringPoolString() {
+
+    constructor(file: RandomAccessFile, flags: Int) : this() {
+        len = file.read()
+        if (len >= 128) {
+            file.read()
+        }
+        len = file.read()
+        if (len >= 128) {
+            len = file.read() or ((len and 0x7f) shl 8)
+        }
+        val bytes = ByteArray(len)
+        file.read(bytes)
+        file.read()
+        val charset = if (flags >= 0x100) {
+            "UTF-8"
+        } else {
+            file.read()
+            "UTF-16"
+        }
+        content = String(bytes, Charset.forName(charset))
+    }
+
     companion object {
         /**
          * @param flags 字符串编码格式

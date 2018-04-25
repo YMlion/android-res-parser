@@ -1,13 +1,21 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * table header, 12 bytes
  *
  * Created by YMlion on 2018/4/17.
  */
-class ResTableHeader {
+class ResTableHeader() {
+
+    constructor(file: RandomAccessFile) : this() {
+        header = ResHeader(file)
+        val byteArray = ByteArray(4)
+        file.read(byteArray)
+        packageCount = ByteUtil.bytes2Int(byteArray, 0, 4)
+    }
 
     companion object {
         public fun parse(inputStream: InputStream): ResTableHeader {
@@ -24,7 +32,7 @@ class ResTableHeader {
     /**
      * chunk header, 8 bytes
      */
-    var header: ResHeader? = null
+    lateinit var header: ResHeader
     /**
      * package count, 4 bytes, default is 1
      */

@@ -1,6 +1,7 @@
 package com.ymlion.parser
 
 import java.io.InputStream
+import java.io.RandomAccessFile
 
 /**
  * 8 bytes
@@ -28,6 +29,14 @@ class ResHeader() {
             resHeader.size = ByteUtil.bytes2Int(byteArray, 4, 4)
             return resHeader
         }
+    }
+
+    constructor(file: RandomAccessFile) : this() {
+        val byteArray = ByteArray(8)
+        file.read(byteArray)
+        type = ByteUtil.bytes2Int(byteArray, 0, 2)
+        headSize = ByteUtil.bytes2Int(byteArray, 2, 2)
+        size = ByteUtil.bytes2Int(byteArray, 4, 4)
     }
 
     constructor(type: Int, headSize: Int, size: Int) : this() {
