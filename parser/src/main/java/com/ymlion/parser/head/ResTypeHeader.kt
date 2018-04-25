@@ -1,5 +1,6 @@
-package com.ymlion.parser
+package com.ymlion.parser.head
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -63,9 +64,9 @@ class ResTypeHeader() {
 
     override fun toString(): String {
         return StringBuilder().append("ResTypeHeader:").append('\n').append(
-                        header.toString()).append('\n').append("type id           : $id").append(
-                        '\n').append("entry count       : $entryCount").append('\n').append(
-                        "entry start       : $entriesStart").toString()
+                header.toString()).append('\n').append("type id           : $id").append(
+                '\n').append("entry count       : $entryCount").append('\n').append(
+                "entry start       : $entriesStart").toString()
     }
 
     /**

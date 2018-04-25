@@ -1,5 +1,6 @@
-package com.ymlion.parser
+package com.ymlion.parser.entry
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 

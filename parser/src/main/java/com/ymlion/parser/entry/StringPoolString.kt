@@ -1,4 +1,4 @@
-package com.ymlion.parser
+package com.ymlion.parser.entry
 
 import java.io.InputStream
 import java.io.RandomAccessFile

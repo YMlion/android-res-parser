@@ -1,5 +1,6 @@
-package com.ymlion.parser
+package com.ymlion.parser.head
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -64,12 +65,11 @@ class ResStringPoolHeader() {
 
     override fun toString(): String {
         return StringBuilder().append("ResStringPoolHeader:").append('\n').append(
-                        header.toString()).append('\n').append(
-                        "string count      : $stringCount").append('\n').append(
-                        "style count       : $styleCount").append('\n').append(
-                        "flags             : $flags").append('\n').append(
-                        "strings start     : $stringsStart").append('\n').append(
-                        "styles start      : $stylesStart").toString()
+                header.toString()).append('\n').append("string count      : $stringCount").append(
+                '\n').append("style count       : $styleCount").append('\n').append(
+                "flags             : $flags").append('\n').append(
+                "strings start     : $stringsStart").append('\n').append(
+                "styles start      : $stylesStart").toString()
     }
 
 }

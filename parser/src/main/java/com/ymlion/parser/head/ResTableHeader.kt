@@ -1,5 +1,6 @@
-package com.ymlion.parser
+package com.ymlion.parser.head
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -40,7 +41,7 @@ class ResTableHeader() {
 
     override fun toString(): String {
         return StringBuilder().append("ResTableHeader:").append('\n').append(
-                        header.toString()).append('\n').append(
-                        "package count     : $packageCount").toString()
+                header.toString()).append('\n').append(
+                "package count     : $packageCount").toString()
     }
 }

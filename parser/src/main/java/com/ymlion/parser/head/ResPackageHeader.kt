@@ -1,5 +1,6 @@
-package com.ymlion.parser
+package com.ymlion.parser.head
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -97,12 +98,12 @@ class ResPackageHeader() {
 
     override fun toString(): String {
         return StringBuilder().append("ResPackageHeader:").append('\n').append(
-                        header.toString()).append('\n').append("package id        : $id").append(
-                        '\n').append("package name      : $name").append('\n').append(
-                        "type offset       : $typeStrings").append('\n').append(
-                        "type num          : $lastPublicType").append('\n').append(
-                        "key offset        : $keyStrings").append('\n').append(
-                        "key num           : $lastPublicKey").toString()
+                header.toString()).append('\n').append("package id        : $id").append(
+                '\n').append("package name      : $name").append('\n').append(
+                "type offset       : $typeStrings").append('\n').append(
+                "type num          : $lastPublicType").append('\n').append(
+                "key offset        : $keyStrings").append('\n').append(
+                "key num           : $lastPublicKey").toString()
     }
 
 }

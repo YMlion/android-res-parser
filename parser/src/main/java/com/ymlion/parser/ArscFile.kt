@@ -1,7 +1,18 @@
 package com.ymlion.parser
 
-import com.ymlion.parser.ResTableEntry.ResMapEntry
+import com.ymlion.parser.entry.ResTableEntry
+import com.ymlion.parser.entry.ResTableEntry.ResMapEntry
+import com.ymlion.parser.entry.StringPoolString
+import com.ymlion.parser.entry.StringPoolStyle
+import com.ymlion.parser.head.ResHeader
+import com.ymlion.parser.head.ResPackageHeader
+import com.ymlion.parser.head.ResStringPoolHeader
+import com.ymlion.parser.head.ResTableHeader
+import com.ymlion.parser.head.ResTypeHeader
+import com.ymlion.parser.head.ResTypeSpecHeader
+import com.ymlion.parser.util.ByteUtil
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -12,7 +23,7 @@ public class ArscFile(var mFile: File) {
 
     public constructor(fileName: String) : this(File(fileName))
 
-    var mInput: RandomAccessFile = RandomAccessFile(mFile, "rw")
+    private var mInput: RandomAccessFile = RandomAccessFile(mFile, "rw")
 
     fun parse(): Boolean {
         println("start parse ${mFile.name}")
@@ -72,6 +83,10 @@ public class ArscFile(var mFile: File) {
 
     private fun parseTableHeader(): ResTableHeader {
         val tableHeader = ResTableHeader(mInput)
+        if (tableHeader.header.type != 0x2) {
+            throw FileNotFoundException("this file is not a arsc file.")
+        }
+        // length()方法获取的大小和实际大小有可能不同
         mInput.setLength(tableHeader.header.size.toLong())
         return tableHeader
     }
