@@ -76,8 +76,6 @@ public class ArscFile(var mFile: File) {
     private fun parsePackageHeader(): ResPackageHeader {
         // 解析package header
         val packageHeader = ResPackageHeader(mInput)
-        // package head之后以4个0x00分割
-        mInput.skipBytes(4)
         return packageHeader
     }
 
@@ -124,6 +122,58 @@ public class ArscFile(var mFile: File) {
         }
     }
 
+    public fun resetPackageId(newId: Int): Boolean {
+        // skip table header
+        val tableHeader = ResTableHeader(mInput)
+        assert(tableHeader.header.type == 2)
+        // skip global string pool
+        var stringPoolHeader = ResStringPoolHeader(mInput)
+        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
+        val pkgHeader = ResPackageHeader(mInput)
+        // find package id pointer
+        mInput.seek(mInput.filePointer - pkgHeader.header.headSize + 8)
+        mInput.write(newId)
+        // current at 9
+        mInput.skipBytes(pkgHeader.header.headSize - 9)
+        stringPoolHeader = ResStringPoolHeader(mInput)
+        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
+        stringPoolHeader = ResStringPoolHeader(mInput)
+        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
+        // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
+        var resHeader = ResHeader(mInput)
+        // 有多少资源类型，后面就有多少 type spec
+        for (i in 1..pkgHeader.lastPublicType) {
+            val specHeader = ResTypeSpecHeader(mInput, resHeader)
+            // spec 资源数组
+            mInput.skipBytes(4 * specHeader.entryCount)
+
+            resHeader = ResHeader(mInput)
+            while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
+                val typeHeader = ResTypeHeader(mInput, resHeader)
+                val chunkEnd = mInput.filePointer + typeHeader.header.size - typeHeader.header.headSize
+                // entry偏移数组
+                mInput.skipBytes(typeHeader.entryCount * 4)
+                // 读取资源项
+                while (mInput.filePointer < chunkEnd) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
+                    val tableEntry = ResMapEntry(mInput, newId)
+                }
+                if (tableHeader.header.size == mInput.filePointer.toInt()) {
+                    break
+                }
+                resHeader = ResHeader(mInput)
+            }
+        }
+        val available = mInput.read() == -1
+        if (available) {
+            println("更新 package id 完毕.")
+        } else {
+            println("更新id失败，还剩 ${mInput.length() - mInput.filePointer + 1} 字节")
+        }
+        mInput.close()
+
+        return available
+    }
+
     companion object {
         public fun parse(input: InputStream) {
             var tableHeader = ResTableHeader.parse(input)
@@ -132,8 +182,6 @@ public class ArscFile(var mFile: File) {
             parseStringPool(input)
             // 解析package header
             val packageHeader = ResPackageHeader.parse(input)
-            // package head之后以4个0x00分割
-            skip(input, 4)
             // package chunk后面是资源类型字符串池和资源名称字符串池
             // 这两部分的结构和和前面的字符串池结构相同，只不过字符串样式数量为0
             // 先解析资源类型字符串池，资源类型有限，一般十多种

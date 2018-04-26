@@ -5,7 +5,7 @@ import java.io.InputStream
 import java.io.RandomAccessFile
 
 /**
- * package header, 284 bytes
+ * package header, 288 bytes
  *
  * Created by YMlion on 2018/4/18.
  */
@@ -34,6 +34,8 @@ class ResPackageHeader() {
         keyStrings = ByteUtil.bytes2Int(byteArray, 0, 4)
         file.read(byteArray)
         lastPublicKey = ByteUtil.bytes2Int(byteArray, 0, 4)
+        val available = header.headSize - 284
+        file.skipBytes(available)
     }
 
     companion object {
@@ -62,6 +64,10 @@ class ResPackageHeader() {
             packageHeader.keyStrings = ByteUtil.bytes2Int(byteArray, 0, 4)
             inputStream.read(byteArray)
             packageHeader.lastPublicKey = ByteUtil.bytes2Int(byteArray, 0, 4)
+            val available = packageHeader.header.headSize - 284
+            if (available > 0) {
+                inputStream.read(ByteArray(available))
+            }
             println(packageHeader)
             return packageHeader
         }
@@ -70,7 +76,7 @@ class ResPackageHeader() {
     /**
      * chunk header, 8 bytes
      */
-    var header: ResHeader? = null
+    lateinit var header: ResHeader
     /**
      * package id, 应用默认为0x7F，系统应用为0x01
      */

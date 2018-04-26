@@ -99,6 +99,31 @@ open class ResTableEntry {
             }
         }
 
+        constructor(file: RandomAccessFile, newId: Int) : this() {
+            var bytes = ByteArray(8)
+            file.read(bytes)
+            size = ByteUtil.bytes2Int(bytes, 0, 2)
+            flags = ByteUtil.bytes2Int(bytes, 2, 2)
+            key = ByteUtil.bytes2Int(bytes, 4, 4)
+            if (flags and 0x0001 == 1) {
+                file.read(bytes)
+                parent = ByteUtil.bytes2Int(bytes, 0, 4)
+                count = ByteUtil.bytes2Int(bytes, 4, 4)
+                for (i in 1..count) {
+                    // 解析map数组
+                    file.skipBytes(3)
+                    val oldId = file.read()
+                    if (oldId == 0x7f) {
+                        file.seek(file.filePointer - 1)
+                        file.write(newId)
+                    }
+                    file.skipBytes(8)
+                }
+            } else {
+                file.skipBytes(8)
+            }
+        }
+
         /**
          * 父节点，4字节
          */
