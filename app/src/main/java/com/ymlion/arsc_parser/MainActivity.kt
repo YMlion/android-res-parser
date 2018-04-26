@@ -8,6 +8,8 @@ import com.ymlion.arsc_parser.R.id
 import com.ymlion.arsc_parser.R.layout
 import com.ymlion.arsc_parser.R.string
 import com.ymlion.parser.ArscFile
+import kotlinx.android.synthetic.main.activity_main.message
+import kotlinx.android.synthetic.main.activity_main.navigation
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
