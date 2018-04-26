@@ -1,6 +1,7 @@
 package com.ymlion.parser;
 
 import com.ymlion.parser.rule.TimeSpaceRule;
+import com.ymlion.parser.util.FileEditor;
 import java.io.File;
 import org.junit.After;
 import org.junit.Before;
@@ -28,6 +29,10 @@ public class ArscFileTest {
 
     @Test public void resetPackageIdTest() {
         assertTrue(mArscFile.resetPackageId(0x66));
+    }
+
+    @Test public void resetR() {
+        assertTrue(FileEditor.INSTANCE.resetR(new File("res" + File.separator + "R.java"), "66"));
     }
 
     @After public void tearDown() throws Exception {
