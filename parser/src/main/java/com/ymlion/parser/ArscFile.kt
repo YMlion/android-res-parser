@@ -12,7 +12,6 @@ import com.ymlion.parser.head.ResTypeHeader
 import com.ymlion.parser.head.ResTypeSpecHeader
 import com.ymlion.parser.util.ByteUtil
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.RandomAccessFile
 
@@ -80,12 +79,12 @@ public class ArscFile(var mFile: File) {
     }
 
     private fun parseTableHeader(): ResTableHeader {
-        val tableHeader = ResTableHeader(mInput)
-        if (tableHeader.header.type != 0x2) {
-            throw FileNotFoundException("this file is not a arsc file.")
+        val tableHeader = ResTableHeader(mInput).takeIf {
+            it.header.type == 0x2
         }
+        checkNotNull(tableHeader)
         // length()方法获取的大小和实际大小有可能不同
-        mInput.setLength(tableHeader.header.size.toLong())
+        mInput.setLength(tableHeader?.header!!.size.toLong())
         return tableHeader
     }
 
@@ -93,11 +92,11 @@ public class ArscFile(var mFile: File) {
         // 开始位置
         val startPosition = mInput.filePointer
         // 解析头部
-        val stringPoolHeader = ResStringPoolHeader(mInput)
-        // 字符串偏移数组
-        mInput.skipBytes(stringPoolHeader.stringCount * 4)
-        // 字符串样式偏移数组
-        mInput.skipBytes(stringPoolHeader.styleCount * 4)
+        val stringPoolHeader = ResStringPoolHeader(mInput).apply {
+            // 字符串偏移数组
+            // 字符串样式偏移数组
+            mInput.skipBytes((stringCount + styleCount) * 4)
+        }
         // 开始读取字符串
         for (i in 0 until stringPoolHeader.stringCount) {
             val string = StringPoolString(mInput, stringPoolHeader.flags)

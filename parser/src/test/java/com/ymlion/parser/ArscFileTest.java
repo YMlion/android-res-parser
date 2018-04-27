@@ -32,7 +32,8 @@ public class ArscFileTest {
     }
 
     @Test public void resetR() {
-        assertTrue(FileEditor.INSTANCE.resetR(new File("res" + File.separator + "R.java"), "66"));
+        assertTrue(
+                FileEditor.INSTANCE.resetRJava(new File("res" + File.separator + "R.java"), "66"));
     }
 
     @After public void tearDown() throws Exception {
