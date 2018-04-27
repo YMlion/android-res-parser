@@ -98,7 +98,7 @@ public class ArscFile(var mFile: File) {
             mInput.skipBytes((stringCount + styleCount) * 4)
         }
         // 开始读取字符串
-        for (i in 0 until stringPoolHeader.stringCount) {
+        for (i in 1..stringPoolHeader.stringCount) {
             val string = StringPoolString(mInput, stringPoolHeader.flags)
 //            println("$i  ${string.content}")
         }
