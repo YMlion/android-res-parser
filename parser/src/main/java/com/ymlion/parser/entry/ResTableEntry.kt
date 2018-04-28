@@ -142,23 +142,4 @@ internal open class ResTableEntry {
 
         lateinit var value: ResValue
     }
-
-    class ResValue {
-        /**
-         * 该类字节数, 2 bytes
-         */
-        var size = 0
-        /**
-         * 0, 1 byte
-         */
-        var res0 = 0
-        /**
-         * 资源数据类型, 1 byte
-         */
-        var dataType = 0
-        /**
-         * 资源值，bag类资源的值或非bag类资源值在字符串池中的索引, 4 bytes
-         */
-        var data = 0
-    }
 }
