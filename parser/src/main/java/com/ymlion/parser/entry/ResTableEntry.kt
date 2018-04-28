@@ -9,7 +9,7 @@ import java.io.RandomAccessFile
  *
  * Created by YMlion on 2018/4/19.
  */
-open class ResTableEntry {
+internal open class ResTableEntry {
 
     companion object {
         public fun parse(input: InputStream): ResTableEntry {

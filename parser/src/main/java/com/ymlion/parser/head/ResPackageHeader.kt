@@ -9,7 +9,7 @@ import java.io.RandomAccessFile
  *
  * Created by YMlion on 2018/4/18.
  */
-class ResPackageHeader() {
+internal class ResPackageHeader() {
     constructor(file: RandomAccessFile) : this() {
         header = ResChunkHeader(file)
         val byteArray = ByteArray(4)

@@ -9,7 +9,7 @@ import java.nio.charset.Charset
  *
  * Created by YMlion on 2018/4/18.
  */
-class StringPoolString() {
+internal class StringPoolString() {
 
     constructor(file: RandomAccessFile, flags: Int) : this() {
         len = file.read()

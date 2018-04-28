@@ -11,7 +11,7 @@ import java.io.RandomAccessFile
  *
  * Created by YMlion on 2018/4/18.
  */
-class StringPoolStyle() {
+internal class StringPoolStyle() {
 
     constructor(file: RandomAccessFile) : this() {
         val bytes = ByteArray(16)

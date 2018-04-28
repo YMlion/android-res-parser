@@ -13,18 +13,15 @@ import com.ymlion.parser.head.ResTypeSpecHeader
 import com.ymlion.parser.util.ByteUtil
 import java.io.File
 import java.io.InputStream
-import java.io.RandomAccessFile
 
 /**
  * Created by YMlion on 2018/4/18.
  */
-public class ArscFile(var mFile: File) {
+class ArscFile(file: File) : ResFile(file) {
 
-    public constructor(fileName: String) : this(File(fileName))
+    constructor(fileName: String) : this(File(fileName))
 
-    private var mInput: RandomAccessFile = RandomAccessFile(mFile, "rw")
-
-    fun parse(): Boolean {
+    override fun parse(): Boolean {
         println("start parse ${mFile.name}")
         val tableHeader = parseTableHeader()
         // 解析全局字符串资源值，字符串池存放所有资源的值，并且该值为字符串
@@ -80,7 +77,7 @@ public class ArscFile(var mFile: File) {
 
     private fun parseTableHeader(): ResTableHeader {
         val tableHeader = ResTableHeader(mInput).takeIf {
-            it.header.type == 0x2
+            it.header.type == ResChunkHeader.RES_TABLE_TYPE
         }
         checkNotNull(tableHeader)
         // length()方法获取的大小和实际大小有可能不同
@@ -88,56 +85,22 @@ public class ArscFile(var mFile: File) {
         return tableHeader
     }
 
-    private fun parseStringPool() {
-        // 开始位置
-        val startPosition = mInput.filePointer
-        // 解析头部
-        val stringPoolHeader = ResStringPoolHeader(mInput).apply {
-            // 字符串偏移数组
-            // 字符串样式偏移数组
-            mInput.skipBytes((stringCount + styleCount) * 4)
-        }
-        // 开始读取字符串
-        for (i in 1..stringPoolHeader.stringCount) {
-            val string = StringPoolString(mInput, stringPoolHeader.flags)
-//            println("$i  ${string.content}")
-        }
-        // 4字节对齐
-        val makeUp = 4 - mInput.filePointer % 4
-        if (makeUp < 4) {
-            mInput.skipBytes(makeUp.toInt())
-        }
-        // 读取字符串样式
-        for (i in 0 until stringPoolHeader.styleCount) {
-            StringPoolStyle(mInput)
-        }
-        // style数组以8字节0xFF作为结尾
-        if (stringPoolHeader.styleCount > 0) {
-            mInput.skipBytes(8)
-        }
-        val dif = startPosition + stringPoolHeader.header.size - mInput.filePointer
-        if (dif > 0) {// 解析完该部分之后，有可能有4个0x00结尾
-            mInput.skipBytes(dif.toInt())
-        }
-    }
-
-    public fun resetPackageId(newId: Int): Boolean {
+    override fun resetPackageId(newId: Int): Boolean {
         // skip table header
         val tableHeader = ResTableHeader(mInput)
         assert(tableHeader.header.type == 2)
         // skip global string pool
-        var stringPoolHeader = ResStringPoolHeader(mInput)
-        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
+        skipStringPool()
         val pkgHeader = ResPackageHeader(mInput)
         // find package id pointer
         mInput.seek(mInput.filePointer - pkgHeader.header.headSize + 8)
         mInput.write(newId)
         // current at 9
         mInput.skipBytes(pkgHeader.header.headSize - 9)
-        stringPoolHeader = ResStringPoolHeader(mInput)
-        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
-        stringPoolHeader = ResStringPoolHeader(mInput)
-        mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
+        // skip res type
+        skipStringPool()
+        // skip res name
+        skipStringPool()
         // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
         var resHeader = ResChunkHeader(mInput)
         // 有多少资源类型，后面就有多少 type spec
@@ -154,7 +117,7 @@ public class ArscFile(var mFile: File) {
                 mInput.skipBytes(typeHeader.entryCount * 4)
                 // 读取资源项
                 while (mInput.filePointer < chunkEnd) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
-                    val tableEntry = ResMapEntry(mInput, newId)
+                    ResMapEntry(mInput, newId)
                 }
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {
                     break

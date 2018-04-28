@@ -9,7 +9,7 @@ import java.io.RandomAccessFile
  *
  * Created by YMlion on 2018/4/19.
  */
-class ResTypeHeader() {
+internal class ResTypeHeader() {
 
     constructor(file: RandomAccessFile, resChunkHeader: ResChunkHeader) : this() {
         header = resChunkHeader

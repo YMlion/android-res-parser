@@ -76,32 +76,8 @@ class MainActivity : AppCompatActivity() {
 
         thread {
             SystemClock.sleep(2000)
-            ArscFile(File(cacheDir, "resources.arsc")).parse()
-        }
-
-        thread {
-            val byteFile = File(cacheDir, "test.dat")
-            if (!byteFile.exists() || byteFile.length().toInt() == 0) {
-                byteFile.createNewFile()
-                val outputStream = FileOutputStream(byteFile)
-                val channel = outputStream.channel
-                var buffer = ByteBuffer.allocate(1024)
-                val byteArray = ByteArray(1024)
-                Arrays.fill(byteArray, 0x01.toByte())
-                buffer.put(byteArray)
-                buffer.flip()
-                channel.write(buffer)
-                buffer = Charset.forName("utf-8").encode("hello world!")
-                channel.write(buffer)
-                outputStream.close()
-                channel.close()
-            }
-            SystemClock.sleep(1000)
-            val raf = RandomAccessFile(byteFile, "rw")
-            raf.seek(1024)
-            raf.writeChars("hello, random!")
-            raf.write(0x7f)
-            raf.close()
+            val arscFile = ArscFile(File(cacheDir, "resources.arsc"))
+            arscFile.parse()
         }
     }
 }
