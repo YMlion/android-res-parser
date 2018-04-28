@@ -19,12 +19,13 @@ class XmlFileTest {
     @Before
     fun setUp() {
         mTestRule= TimeSpaceRule()
-        xml = XmlFile("res" + File.separator + "activity.xml")
     }
 
     @Test
     fun parse() {
-        xml?.parse()
+        XmlFile("res" + File.separator + "activity.xml").parse()
+        XmlFile("res" + File.separator + "drawable.xml").parse()
+        XmlFile("res" + File.separator + "AndroidManifest.xml").parse()
     }
 
     @Test

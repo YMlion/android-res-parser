@@ -1,5 +1,6 @@
 package com.ymlion.parser.entry
 
+import com.ymlion.parser.util.ByteUtil
 import java.io.InputStream
 import java.io.RandomAccessFile
 import java.nio.charset.Charset
@@ -12,22 +13,30 @@ import java.nio.charset.Charset
 internal class StringPoolString() {
 
     constructor(file: RandomAccessFile, flags: Int) : this() {
-        len = file.read()
-        if (len >= 128) {
-            file.read()
+        val utf_8 = flags >= 0x100
+        if (utf_8) {
+            len = file.read()
+            if (len >= 128) {
+                file.read()
+            }
+            len = file.read()
+            if (len >= 128) {
+                len = file.read() or ((len and 0x7f) shl 8)
+            }
+        } else {
+            val bytes = ByteArray(2)
+            file.read(bytes)
+            len = ByteUtil.bytes2Int(bytes, 0, 2) * 2
         }
-        len = file.read()
-        if (len >= 128) {
-            len = file.read() or ((len and 0x7f) shl 8)
-        }
-        val bytes = ByteArray(len)
+        var bytes = ByteArray(len)
         file.read(bytes)
         file.read()
-        val charset = if (flags >= 0x100) {
+        val charset = if (utf_8) {
             "UTF-8"
         } else {
             file.read()
-            "UTF-16"
+            bytes = bytes.filter { it > 0 }.toByteArray()
+            "UTF-8"
         }
         content = String(bytes, Charset.forName(charset))
     }

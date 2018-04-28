@@ -10,7 +10,7 @@ import java.io.RandomAccessFile
  */
 internal class Attribute() {
     constructor(input: RandomAccessFile): this() {
-        val bytes = ByteArray(20)
+        val bytes = ByteArray(12)
         input.read(bytes)
         ns = ByteUtil.bytes2Int(bytes, 0, 4)
         name = ByteUtil.bytes2Int(bytes, 4, 4)
