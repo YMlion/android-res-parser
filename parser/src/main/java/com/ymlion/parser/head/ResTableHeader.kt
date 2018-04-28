@@ -12,7 +12,7 @@ import java.io.RandomAccessFile
 class ResTableHeader() {
 
     constructor(file: RandomAccessFile) : this() {
-        header = ResHeader(file)
+        header = ResChunkHeader(file)
         val byteArray = ByteArray(4)
         file.read(byteArray)
         packageCount = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -21,7 +21,7 @@ class ResTableHeader() {
     companion object {
         public fun parse(inputStream: InputStream): ResTableHeader {
             val resTableHeader = ResTableHeader()
-            resTableHeader.header = ResHeader.parse(inputStream)
+            resTableHeader.header = ResChunkHeader.parse(inputStream)
             val byteArray = ByteArray(4)
             inputStream.read(byteArray)
             resTableHeader.packageCount = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -33,7 +33,7 @@ class ResTableHeader() {
     /**
      * chunk header, 8 bytes
      */
-    lateinit var header: ResHeader
+    lateinit var header: ResChunkHeader
     /**
      * package count, 4 bytes, default is 1
      */

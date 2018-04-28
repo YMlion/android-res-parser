@@ -12,7 +12,7 @@ import java.io.RandomAccessFile
 class ResStringPoolHeader() {
 
     constructor(file: RandomAccessFile) : this() {
-        header = ResHeader(file)
+        header = ResChunkHeader(file)
         val byteArray = ByteArray(20)
         file.read(byteArray)
         stringCount = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -25,7 +25,7 @@ class ResStringPoolHeader() {
     companion object {
         public fun parse(inputStream: InputStream): ResStringPoolHeader {
             val stringPoolHeader = ResStringPoolHeader()
-            stringPoolHeader.header = ResHeader.parse(inputStream)
+            stringPoolHeader.header = ResChunkHeader.parse(inputStream)
             val byteArray = ByteArray(20)
             inputStream.read(byteArray)
             stringPoolHeader.stringCount = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -41,7 +41,7 @@ class ResStringPoolHeader() {
     /**
      * chunk head, 8 bytes
      */
-    lateinit var header: ResHeader
+    lateinit var header: ResChunkHeader
     /**
      * strings count, 4 bytes
      */

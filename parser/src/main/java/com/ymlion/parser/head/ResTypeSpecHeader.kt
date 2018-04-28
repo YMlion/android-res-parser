@@ -10,8 +10,8 @@ import java.io.RandomAccessFile
  * Created by YMlion on 2018/4/19.
  */
 class ResTypeSpecHeader() {
-    constructor(file: RandomAccessFile, resHeader: ResHeader) : this() {
-        header = resHeader
+    constructor(file: RandomAccessFile, resChunkHeader: ResChunkHeader) : this() {
+        header = resChunkHeader
         val byteArray = ByteArray(8)
         file.read(byteArray)
         id = ByteUtil.bytes2Int(byteArray, 0, 1)
@@ -21,12 +21,13 @@ class ResTypeSpecHeader() {
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeSpecHeader {
-            return parse(inputStream, ResHeader.parse(inputStream))
+            return parse(inputStream, ResChunkHeader.parse(inputStream))
         }
 
-        public fun parse(inputStream: InputStream, resHeader: ResHeader): ResTypeSpecHeader {
+        public fun parse(inputStream: InputStream,
+                resChunkHeader: ResChunkHeader): ResTypeSpecHeader {
             val specHeader = ResTypeSpecHeader()
-            specHeader.header = resHeader
+            specHeader.header = resChunkHeader
             val byteArray = ByteArray(8)
             inputStream.read(byteArray)
             specHeader.id = ByteUtil.bytes2Int(byteArray, 0, 1)
@@ -40,7 +41,7 @@ class ResTypeSpecHeader() {
     /**
      * chunk header, 8 bytes
      */
-    var header: ResHeader? = null
+    var header: ResChunkHeader? = null
     /**
      * 资源类型id，1 byte, start with 1
      */

@@ -11,7 +11,7 @@ import java.io.RandomAccessFile
  */
 class ResPackageHeader() {
     constructor(file: RandomAccessFile) : this() {
-        header = ResHeader(file)
+        header = ResChunkHeader(file)
         val byteArray = ByteArray(4)
         file.read(byteArray)
         id = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -41,7 +41,7 @@ class ResPackageHeader() {
     companion object {
         public fun parse(inputStream: InputStream): ResPackageHeader {
             val packageHeader = ResPackageHeader()
-            packageHeader.header = ResHeader.parse(inputStream)
+            packageHeader.header = ResChunkHeader.parse(inputStream)
             val byteArray = ByteArray(4)
             inputStream.read(byteArray)
             packageHeader.id = ByteUtil.bytes2Int(byteArray, 0, 4)
@@ -76,7 +76,7 @@ class ResPackageHeader() {
     /**
      * chunk header, 8 bytes
      */
-    lateinit var header: ResHeader
+    lateinit var header: ResChunkHeader
     /**
      * package id, 应用默认为0x7F，系统应用为0x01
      */

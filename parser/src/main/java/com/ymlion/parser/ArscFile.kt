@@ -4,7 +4,7 @@ import com.ymlion.parser.entry.ResTableEntry
 import com.ymlion.parser.entry.ResTableEntry.ResMapEntry
 import com.ymlion.parser.entry.StringPoolString
 import com.ymlion.parser.entry.StringPoolStyle
-import com.ymlion.parser.head.ResHeader
+import com.ymlion.parser.head.ResChunkHeader
 import com.ymlion.parser.head.ResPackageHeader
 import com.ymlion.parser.head.ResStringPoolHeader
 import com.ymlion.parser.head.ResTableHeader
@@ -38,14 +38,14 @@ public class ArscFile(var mFile: File) {
         // 解析资源名称字符串池，资源定义中的属性(key)字符串存放在这里，值(value)有一部分存放在全局字符串池中，非字符串则存放在后面的entry中
         parseStringPool()
         // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
-        var resHeader = ResHeader(mInput)
+        var resHeader = ResChunkHeader(mInput)
         // 有多少资源类型，后面就有多少 type spec
         for (i in 1..packageHeader.lastPublicType) {
             val specHeader = ResTypeSpecHeader(mInput, resHeader)
             // spec 资源数组
             mInput.skipBytes(4 * specHeader.entryCount)
 
-            resHeader = ResHeader(mInput)
+            resHeader = ResChunkHeader(mInput)
             while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
                 val typeHeader = ResTypeHeader(mInput, resHeader)
                 val chunkEnd = mInput.filePointer + typeHeader.header.size - typeHeader.header.headSize
@@ -58,7 +58,7 @@ public class ArscFile(var mFile: File) {
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {
                     break
                 }
-                resHeader = ResHeader(mInput)
+                resHeader = ResChunkHeader(mInput)
             }
         }
         val available = mInput.read() == -1
@@ -139,14 +139,14 @@ public class ArscFile(var mFile: File) {
         stringPoolHeader = ResStringPoolHeader(mInput)
         mInput.skipBytes(stringPoolHeader.header.size - stringPoolHeader.header.headSize)
         // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
-        var resHeader = ResHeader(mInput)
+        var resHeader = ResChunkHeader(mInput)
         // 有多少资源类型，后面就有多少 type spec
         for (i in 1..pkgHeader.lastPublicType) {
             val specHeader = ResTypeSpecHeader(mInput, resHeader)
             // spec 资源数组
             mInput.skipBytes(4 * specHeader.entryCount)
 
-            resHeader = ResHeader(mInput)
+            resHeader = ResChunkHeader(mInput)
             while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
                 val typeHeader = ResTypeHeader(mInput, resHeader)
                 val chunkEnd = mInput.filePointer + typeHeader.header.size - typeHeader.header.headSize
@@ -159,7 +159,7 @@ public class ArscFile(var mFile: File) {
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {
                     break
                 }
-                resHeader = ResHeader(mInput)
+                resHeader = ResChunkHeader(mInput)
             }
         }
         val available = mInput.read() == -1
@@ -189,7 +189,7 @@ public class ArscFile(var mFile: File) {
             parseStringPool(input)
             val offBytes = ByteArray(4)
             // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
-            var resHeader = ResHeader.parse(input)
+            var resHeader = ResChunkHeader.parse(input)
             // 有多少资源类型，后面就有多少 type spec
             for (j in 1..packageHeader.lastPublicType) {
                 val specHeader = ResTypeSpecHeader.parse(input, resHeader)
@@ -197,7 +197,7 @@ public class ArscFile(var mFile: File) {
                 for (i in 0 until specHeader.entryCount) {
                     input.read(offBytes)
                 }
-                resHeader = ResHeader.parse(input)
+                resHeader = ResChunkHeader.parse(input)
                 while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
                     val typeHeader = ResTypeHeader.parse(input, resHeader)
                     var total = typeHeader.header.headSize
@@ -215,7 +215,7 @@ public class ArscFile(var mFile: File) {
                             16
                         }
                     }
-                    resHeader = ResHeader.parse(input)
+                    resHeader = ResChunkHeader.parse(input)
                 }
             }
             val available = input.available()

@@ -9,7 +9,7 @@ import java.io.RandomAccessFile
  *
  * Created by YMlion on 2018/4/17.
  */
-class ResHeader() {
+class ResChunkHeader() {
     companion object {
         public const val RES_NULL_TYPE = 0x0000
         public const val RES_STRING_POOL_TYPE = 0x0001
@@ -21,8 +21,8 @@ class ResHeader() {
         public const val RES_TABLE_TYPE_SPEC_TYPE = 0x0202
         public const val RES_TABLE_LIBRARY_TYPE = 0x0203
 
-        public fun parse(inputStream: InputStream): ResHeader {
-            val resHeader = ResHeader()
+        public fun parse(inputStream: InputStream): ResChunkHeader {
+            val resHeader = ResChunkHeader()
             val byteArray = ByteArray(8)
             inputStream.read(byteArray)
             resHeader.type = ByteUtil.bytes2Int(byteArray, 0, 2)

@@ -11,8 +11,8 @@ import java.io.RandomAccessFile
  */
 class ResTypeHeader() {
 
-    constructor(file: RandomAccessFile, resHeader: ResHeader) : this() {
-        header = resHeader
+    constructor(file: RandomAccessFile, resChunkHeader: ResChunkHeader) : this() {
+        header = resChunkHeader
         val byteArray = ByteArray(12)
         file.read(byteArray)
         // id之后三位保留，为0
@@ -25,10 +25,10 @@ class ResTypeHeader() {
 
     companion object {
         public fun parse(inputStream: InputStream): ResTypeHeader {
-            return parse(inputStream, ResHeader.parse(inputStream))
+            return parse(inputStream, ResChunkHeader.parse(inputStream))
         }
 
-        public fun parse(inputStream: InputStream, header: ResHeader): ResTypeHeader {
+        public fun parse(inputStream: InputStream, header: ResChunkHeader): ResTypeHeader {
             val typeHeader = ResTypeHeader()
             typeHeader.header = header
             val byteArray = ByteArray(12)
@@ -47,7 +47,7 @@ class ResTypeHeader() {
     /**
      * chunk header, 8 bytes
      */
-    lateinit var header: ResHeader
+    lateinit var header: ResChunkHeader
 
     /**
      * type id, 1 byte
