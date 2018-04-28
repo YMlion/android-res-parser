@@ -13,10 +13,6 @@ import kotlinx.android.synthetic.main.activity_main.navigation
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.RandomAccessFile
-import java.nio.ByteBuffer
-import java.nio.charset.Charset
-import java.util.Arrays
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {

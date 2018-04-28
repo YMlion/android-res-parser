@@ -15,10 +15,17 @@ import java.io.File
 import java.io.InputStream
 
 /**
+ * parse resources.arsc and reset package id
+ *
+ * @param file resources.arsc file
+ *
  * Created by YMlion on 2018/4/18.
  */
 class ArscFile(file: File) : ResFile(file) {
 
+    /**
+     * @param fileName resources.arsc file absolute path
+     */
     constructor(fileName: String) : this(File(fileName))
 
     override fun parse(): Boolean {

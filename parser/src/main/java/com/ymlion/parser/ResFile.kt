@@ -7,15 +7,31 @@ import java.io.File
 import java.io.RandomAccessFile
 
 /**
+ * android res file: xml and arsc
+ *
+ * @param mFile binary res file
  * Created by YMlion on 2018/4/28.
  */
 abstract class ResFile(protected var mFile: File) {
     constructor(filePath: String) : this(File(filePath))
 
     protected var mInput: RandomAccessFile = RandomAccessFile(mFile, "rw")
+
+    /**
+     * parse the binary res file
+     */
     abstract fun parse(): Boolean
+
+    /**
+     * reset package id
+     *
+     * @param newId new package id
+     */
     abstract fun resetPackageId(newId: Int): Boolean
 
+    /**
+     * parse string pool
+     */
     protected fun parseStringPool() {
         // 开始位置
         val startPosition = mInput.filePointer
@@ -49,12 +65,18 @@ abstract class ResFile(protected var mFile: File) {
         }
     }
 
+    /**
+     * skip string pool when reset package id
+     */
     protected fun skipStringPool() {
         with(ResStringPoolHeader(mInput)) {
             mInput.skipBytes(header.size - header.headSize)
         }
     }
 
+    /**
+     * close resource
+     */
     fun close() {
         mInput.close()
         mInput.close()
