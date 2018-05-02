@@ -31,7 +31,7 @@ internal open class ResTableEntry {
                 entry.parent = ByteUtil.bytes2Int(bytes, 0, 4)
                 entry.count = ByteUtil.bytes2Int(bytes, 4, 4)
                 bytes = ByteArray(12)
-                for (i in 1..entry.count) {
+                for (i in 0 until entry.count) {
                     // 解析map数组
                     input.read(bytes)
                     var tableMap = ResTableMap()
@@ -80,7 +80,7 @@ internal open class ResTableEntry {
                 parent = ByteUtil.bytes2Int(bytes, 0, 4)
                 count = ByteUtil.bytes2Int(bytes, 4, 4)
                 bytes = ByteArray(12)
-                for (i in 1..count) {
+                for (i in 0 until count) {
                     // 解析map数组
                     file.read(bytes)
                     var tableMap = ResTableMap()
@@ -109,7 +109,7 @@ internal open class ResTableEntry {
                 file.read(bytes)
                 parent = ByteUtil.bytes2Int(bytes, 0, 4)
                 count = ByteUtil.bytes2Int(bytes, 4, 4)
-                for (i in 1..count) {
+                for (i in 0 until count) {
                     // 解析map数组
                     file.skipBytes(3)
                     val oldId = file.read()

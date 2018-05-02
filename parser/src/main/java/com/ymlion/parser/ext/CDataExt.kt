@@ -6,9 +6,8 @@ import java.io.RandomAccessFile
 
 /**
  * 12 bytes，自定义的xml文件中只含有数据项的node值
- * <p>
- *     像<item>hello world</item>这种，其中"hello world"部分就是CDATA类型
- * </p>
+ *
+ * 像&lt;item&gt;hello world&lt;/item&gt;这种，其中"hello world"部分就是CDATA类型
  *
  * Created by YMlion on 2018/4/28.
  */

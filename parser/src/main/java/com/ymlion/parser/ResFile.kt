@@ -10,6 +10,7 @@ import java.io.RandomAccessFile
  * android res file: xml and arsc
  *
  * @param mFile binary res file
+ *
  * Created by YMlion on 2018/4/28.
  */
 abstract class ResFile(protected var mFile: File) {
@@ -23,7 +24,7 @@ abstract class ResFile(protected var mFile: File) {
     abstract fun parse(): Boolean
 
     /**
-     * reset package id
+     * reset package id, like [parse]
      *
      * @param newId new package id
      */
@@ -50,7 +51,7 @@ abstract class ResFile(protected var mFile: File) {
             mInput.skipBytes((stringCount + styleCount) * 4)
         }
         // 开始读取字符串
-        for (i in 1..stringPoolHeader.stringCount) {
+        for (i in 0 until stringPoolHeader.stringCount) {
             val string = StringPoolString(mInput, stringPoolHeader.flags)
             println("$i  ${string.content}")
             strings.add(string.content)

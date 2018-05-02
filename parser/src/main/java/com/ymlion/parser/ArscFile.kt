@@ -44,7 +44,7 @@ class ArscFile(file: File) : ResFile(file) {
         // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
         var resHeader = ResChunkHeader(mInput)
         // 有多少资源类型，后面就有多少 type spec
-        for (i in 1..packageHeader.lastPublicType) {
+        for (i in 0 until packageHeader.lastPublicType) {
             val specHeader = ResTypeSpecHeader(mInput, resHeader)
             // spec 资源数组
             mInput.skipBytes(4 * specHeader.entryCount)
@@ -111,7 +111,7 @@ class ArscFile(file: File) : ResFile(file) {
         // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
         var resHeader = ResChunkHeader(mInput)
         // 有多少资源类型，后面就有多少 type spec
-        for (i in 1..pkgHeader.lastPublicType) {
+        for (i in 0 until pkgHeader.lastPublicType) {
             val specHeader = ResTypeSpecHeader(mInput, resHeader)
             // spec 资源数组
             mInput.skipBytes(4 * specHeader.entryCount)
@@ -161,7 +161,7 @@ class ArscFile(file: File) : ResFile(file) {
             // 后面同样属于package部分，根据资源类型数量，分别解析，直到全部解析完
             var resHeader = ResChunkHeader.parse(input)
             // 有多少资源类型，后面就有多少 type spec
-            for (j in 1..packageHeader.lastPublicType) {
+            for (j in 0 until packageHeader.lastPublicType) {
                 val specHeader = ResTypeSpecHeader.parse(input, resHeader)
                 // spec 资源数组
                 for (i in 0 until specHeader.entryCount) {

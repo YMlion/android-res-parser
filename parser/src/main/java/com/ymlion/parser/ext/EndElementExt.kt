@@ -5,6 +5,7 @@ import java.io.RandomAccessFile
 
 /**
  * 8 bytes
+ *
  * Created by YMlion on 2018/4/28.
  */
 class EndElementExt() {

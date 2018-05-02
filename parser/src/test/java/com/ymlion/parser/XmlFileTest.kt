@@ -29,6 +29,9 @@ class XmlFileTest {
 
     @Test
     fun resetPackageId() {
+        XmlFile("res" + File.separator + "activity.xml").resetPackageId(0x66)
+        XmlFile("res" + File.separator + "drawable.xml").resetPackageId(0x66)
+        XmlFile("res" + File.separator + "AndroidManifest.xml").resetPackageId(0x66)
     }
 
     @After
