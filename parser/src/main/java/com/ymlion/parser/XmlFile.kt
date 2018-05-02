@@ -2,6 +2,7 @@ package com.ymlion.parser
 
 import com.ymlion.parser.entry.Attribute
 import com.ymlion.parser.ext.AttrExt
+import com.ymlion.parser.ext.CDataExt
 import com.ymlion.parser.ext.EndElementExt
 import com.ymlion.parser.ext.NamespaceExt
 import com.ymlion.parser.head.ResChunkHeader
@@ -38,18 +39,16 @@ class XmlFile(file: File) : ResFile(file) {
             println("属性资源共有${(chunkHeader.size - chunkHeader.headSize) / 4}个")
             chunkHeader = ResChunkHeader(mInput)
         }
-        while (chunkHeader.type == ResChunkHeader.RES_XML_START_NAMESPACE_TYPE) {
-            // 开始解析namespace，该部分是前后对应的，start with this namespace, then end with this too.
-            ResTreeNodeHeader(mInput, chunkHeader)
+        var nodeHeader = ResTreeNodeHeader(mInput, chunkHeader)
+        // 开始解析namespace，该部分是前后对应的，start with this namespace, then end with this too.
+        while (nodeHeader.header.type == ResChunkHeader.RES_XML_START_NAMESPACE_TYPE) {
             val nsExt = NamespaceExt(mInput)
             println("namespace xmlns:${stringPool[nsExt.prefix]}=\"${stringPool[nsExt.uri]}\" start")
             // namespace有可能并不止一个
-            chunkHeader = ResChunkHeader(mInput)
+            nodeHeader = ResTreeNodeHeader(mInput)
         }
         // 开始解析具体node，同样每个node都是前后对应的，有开始就有结束，并且node里面可以包含node
-        while (chunkHeader.type == ResChunkHeader.RES_XML_START_ELEMENT_TYPE) {
-            // 开始解析namespace，该部分是前后对应的，start with this namespace, then end with this too.
-            ResTreeNodeHeader(mInput, chunkHeader)
+        while (nodeHeader.header.type == ResChunkHeader.RES_XML_START_ELEMENT_TYPE) {
             val attrExt = AttrExt(mInput)
             println("${stringPool[attrExt.name]} node start:")
             for (i in 1..attrExt.attributeCount) {
@@ -58,28 +57,33 @@ class XmlFile(file: File) : ResFile(file) {
                     println("${stringPool[attr.name]} : ${attr.typedValue.data}")
                 }
             }
-            // namespace有可能并不止一个
-            chunkHeader = ResChunkHeader(mInput)
-            while (chunkHeader.type == ResChunkHeader.RES_XML_END_ELEMENT_TYPE) {
-                ResTreeNodeHeader(mInput, chunkHeader)
+            nodeHeader = ResTreeNodeHeader(mInput)
+            // 在没有attribute时，如果该node仅仅是一项数据，则是CDATA类型
+            // 在android资源打包过程中，values类型的xml文件是不会被编译为二进制xml文件的，其他类型的xml文件没有这
+            // 种格式的节点，所以正常情况下是不会有这种类型的数据，但自定义的xml文件就有可能包含了。
+            if (nodeHeader.header.type == ResChunkHeader.RES_XML_CDATA_TYPE) {
+                val cDataExt = CDataExt(mInput)
+                println("data is ${stringPool[cDataExt.data]}")
+                nodeHeader = ResTreeNodeHeader(mInput)
+            }
+            // node结束有可能并不止一个
+            while (nodeHeader.header.type == ResChunkHeader.RES_XML_END_ELEMENT_TYPE) {
                 val endElementExt = EndElementExt(mInput)
                 println("${stringPool[endElementExt.name]} end.")
-                chunkHeader = ResChunkHeader(mInput)
+                nodeHeader = ResTreeNodeHeader(mInput)
             }
         }
-        // todo cdata类型解析
 
         // 解析与前面对应的namespace结束
-        while (chunkHeader.type == ResChunkHeader.RES_XML_END_NAMESPACE_TYPE) {
+        while (nodeHeader.header.type == ResChunkHeader.RES_XML_END_NAMESPACE_TYPE) {
             // 开始解析namespace，该部分是前后对应的，start with this namespace, then end with this too.
-            ResTreeNodeHeader(mInput, chunkHeader)
             val nsExt = NamespaceExt(mInput)
             println("namespace xmlns:${stringPool[nsExt.prefix]}=\"${stringPool[nsExt.uri]}\" end.")
             if (mInput.filePointer == xmlHeader!!.size.toLong()) {
                 break
             }
             // namespace有可能并不止一个
-            chunkHeader = ResChunkHeader(mInput)
+            nodeHeader = ResTreeNodeHeader(mInput)
         }
         println("解析结束。")
         mInput.close()

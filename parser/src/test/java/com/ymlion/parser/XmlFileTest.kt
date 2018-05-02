@@ -13,7 +13,6 @@ import java.io.File
  */
 class XmlFileTest {
 
-    private var xml: XmlFile? = null
     @Rule
     lateinit var mTestRule: TestRule
     @Before
