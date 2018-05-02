@@ -8,7 +8,6 @@ import com.ymlion.parser.ext.NamespaceExt
 import com.ymlion.parser.head.ResChunkHeader
 import com.ymlion.parser.head.ResTreeNodeHeader
 import java.io.File
-import kotlin.math.min
 
 /**
  * parse binary xml files and reset package id
@@ -70,6 +69,11 @@ class XmlFile(file: File) : ResFile(file) {
             while (nodeHeader.header.type == ResChunkHeader.RES_XML_END_ELEMENT_TYPE) {
                 val endElementExt = EndElementExt(mInput)
                 println("${stringPool[endElementExt.name]} end.")
+                if (mInput.filePointer == xmlHeader!!.size.toLong()) {
+                    println("解析结束。")
+                    mInput.close()
+                    return true
+                }
                 nodeHeader = ResTreeNodeHeader(mInput)
             }
         }
