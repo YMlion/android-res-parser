@@ -24,4 +24,8 @@ object FileEditor {
 
         return true
     }
+
+    public fun resetRJava(rJava: File, newId: Int): Boolean {
+        return resetRJava(rJava, newId.toString(16))
+    }
 }
