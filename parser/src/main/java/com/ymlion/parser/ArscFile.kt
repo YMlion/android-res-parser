@@ -57,7 +57,7 @@ class ArscFile(file: File) : ResFile(file) {
                 mInput.skipBytes(typeHeader.entryCount * 4)
                 // 读取资源项
                 while (mInput.filePointer < chunkEnd) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
-                    val tableEntry = ResMapEntry(mInput)
+                    ResMapEntry(mInput)
                 }
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {
                     break
@@ -145,7 +145,7 @@ class ArscFile(file: File) : ResFile(file) {
 
     companion object {
         public fun parse(input: InputStream) {
-            var tableHeader = ResTableHeader.parse(input)
+            ResTableHeader.parse(input)
             // 解析全局字符串资源值，字符串池存放所有资源的值，并且该值为字符串
             // 像所有的xml文件名、图片资源名、xml中定义的字符串、系统定义的字符串
             parseStringPool(input)
