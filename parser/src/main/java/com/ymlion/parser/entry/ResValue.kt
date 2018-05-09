@@ -31,7 +31,7 @@ internal class ResValue() {
      */
     var dataType = 0
     /**
-     * 资源值，bag类资源的值或非bag类资源值在字符串池中的索引, 4 bytes
+     * 资源值或资源id，值或值在字符串池中的索引, 4 bytes
      */
     var data = 0
 }

@@ -53,7 +53,7 @@ abstract class ResFile(protected var mFile: File) {
         // 开始读取字符串
         for (i in 0 until stringPoolHeader.stringCount) {
             val string = StringPoolString(mInput, stringPoolHeader.flags)
-            println("$i  ${string.content}")
+//            println("$i  ${string.content}")
             strings.add(string.content)
         }
         // 4字节对齐

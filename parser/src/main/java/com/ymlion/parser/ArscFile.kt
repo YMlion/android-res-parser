@@ -52,11 +52,15 @@ class ArscFile(file: File) : ResFile(file) {
             resHeader = ResChunkHeader(mInput)
             while (resHeader.type == 0x0201) {// 每种类型的资源可以有多种配置
                 val typeHeader = ResTypeHeader(mInput, resHeader)
+                println(typeHeader)
                 val chunkEnd = mInput.filePointer + typeHeader.header.size - typeHeader.header.headSize
                 // entry偏移数组
                 mInput.skipBytes(typeHeader.entryCount * 4)
                 // 读取资源项
-                while (mInput.filePointer < chunkEnd) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
+                // 同一类型的资源可能有不同的配置，当前配置下不一定有所有的资源，只有是该配置的资源才会出现
+                // 因此entry的数量是当前配置的资源数量，并不一定是全部，具体有多少个在entry偏移数组中有所体现
+                // entry数组中偏移值为正的则在当前配置下
+                while (mInput.filePointer < chunkEnd) {// 根据整个type块的大小来确定是否读取完
                     ResMapEntry(mInput)
                 }
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {
@@ -123,7 +127,10 @@ class ArscFile(file: File) : ResFile(file) {
                 // entry偏移数组
                 mInput.skipBytes(typeHeader.entryCount * 4)
                 // 读取资源项
-                while (mInput.filePointer < chunkEnd) {// 一般情况下，会有entryCount个entry，但实际情况下，有可能是没有这么多的，所以根据整个type块的大小来确定是否读取完
+                // 同一类型的资源可能有不同的配置，当前配置下不一定有所有的资源，只有是该配置的资源才会出现
+                // 因此entry的数量是当前配置的资源数量，并不一定是全部，具体有多少个在entry偏移数组中有所体现
+                // entry数组中偏移值为正的则在当前配置下
+                while (mInput.filePointer < chunkEnd) {// 根据整个type块的大小来确定是否读取完
                     ResMapEntry(mInput, newId)
                 }
                 if (tableHeader.header.size == mInput.filePointer.toInt()) {

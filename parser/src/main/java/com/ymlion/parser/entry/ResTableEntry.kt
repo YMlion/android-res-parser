@@ -106,21 +106,32 @@ internal open class ResTableEntry {
             flags = ByteUtil.bytes2Int(bytes, 2, 2)
             key = ByteUtil.bytes2Int(bytes, 4, 4)
             if (flags and 0x0001 == 1) {
+                // 修改parent id
+                writeNewId(file, newId)
+                bytes = ByteArray(4)
                 file.read(bytes)
-                parent = ByteUtil.bytes2Int(bytes, 0, 4)
-                count = ByteUtil.bytes2Int(bytes, 4, 4)
+                count = ByteUtil.bytes2Int(bytes, 0, 4)
                 for (i in 0 until count) {
                     // 解析map数组
-                    file.skipBytes(3)
-                    val oldId = file.read()
-                    if (oldId == 0x7f) {
-                        file.seek(file.filePointer - 1)
-                        file.write(newId)
-                    }
-                    file.skipBytes(8)
+                    // bag id
+                    writeNewId(file, newId)
+                    file.skipBytes(4)
+                    // value id
+                    writeNewId(file, newId)
                 }
             } else {
-                file.skipBytes(8)
+                file.skipBytes(4)
+                // value id
+                writeNewId(file, newId)
+            }
+        }
+
+        private fun writeNewId(file: RandomAccessFile, newId: Int) {
+            file.skipBytes(3)
+            val oldId = file.read()
+            if (oldId == 0x7f) {
+                file.seek(file.filePointer - 1)
+                file.write(newId)
             }
         }
 
@@ -136,7 +147,7 @@ internal open class ResTableEntry {
 
     class ResTableMap {
         /**
-         * 资源真正的id, 4 bytes
+         * 资源id, 4 bytes
          */
         var name = 0
 

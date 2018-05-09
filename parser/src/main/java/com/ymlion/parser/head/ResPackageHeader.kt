@@ -78,7 +78,7 @@ internal class ResPackageHeader() {
      */
     lateinit var header: ResChunkHeader
     /**
-     * package id, 应用默认为0x7F，系统应用为0x01
+     * package id, 应用默认为0x7F，系统应用为0x01，4 bytes
      */
     var id = 0x7f
     /**
@@ -98,7 +98,7 @@ internal class ResPackageHeader() {
      */
     var keyStrings = 0
     /**
-     * 资源名称数量
+     * 资源名称数量，4 bytes
      */
     var lastPublicKey = 0
 
